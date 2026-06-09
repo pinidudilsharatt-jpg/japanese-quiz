@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="si">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Japanese Study Companion</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            user-select: none; /* ෆෝන් එකේදී text select වෙන එක නවත්වන්න */
+            -webkit-user-select: none;
+        }
+
+        body {
+            background-color: #f6f7fb;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+        }
+
+        h1 {
+            margin: 15px 0 5px 0;
+            color: #4257b2;
+            font-size: 22px;
+            text-align: center;
+        }
+
+        p.subtitle {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+        }
+
+        .nav-buttons {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            flex: 1;
+            background-color: #4257b2;
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        button.secondary {
+            background-color: #ffffff;
+            color: #4257b2;
+            border: 2px solid #4257b2;
+        }
+
+        /* Flashcard Styles */
+        .card-view, .quiz-view {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .flashcard {
+            width: 100%;
+            height: 220px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.4s;
+        }
+
+        .flashcard.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front, .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            font-weight: 600;
+            border-radius: 12px;
+            border: 2px solid #e2e8f0;
+            padding: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+        }
+
+        .card-front {
+            background-color: #ffffff;
+            color: #333;
+        }
+
+        .card-back {
+            background-color: #4257b2;
+            color: white;
+            transform: rotateY(180deg);
+            font-size: 20px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .controls button {
+            flex: none;
+            width: 90px;
+            padding: 10px;
+        }
+
+        /* Quiz Styles */
+        .hidden {
+            display: none !important;
+        }
+
+        .quiz-question {
+            font-size: 19px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #2d3748;
+            line-height: 1.4;
+        }
+
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .option-btn {
+            background-color: #f0f2ff;
+            color: #333;
+            border: 2px solid #cfd5ff;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 500;
+            border-radius: 10px;
+            text-align: center;
+            width: 100%;
+            box-shadow: none;
+        }
+
+        /* Feedback Display */
+        .feedback {
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 15px;
+            min-height: 22px;
+        }
+        .correct { color: #2e7d32; }
+        .wrong { color: #c62828; }
+
+        .score-text {
+            font-size: 22px;
+            font-weight: bold;
+            color: #2e7d32;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>ජපන් භාෂා සහකරු</h1>
+    <p class="subtitle">Flashcards & Quiz App</p>
+
+    <div class="container">
+        <div class="nav-buttons">
+            <button id="show-cards-btn" onclick="switchView('cards')">Flashcards</button>
+            <button id="show-quiz-btn" class="secondary" onclick="switchView('quiz')">Start Quiz</button>
+        </div>
+
+        <div id="flashcard-section" class="card-view">
+            <div class="flashcard" onclick="toggleFlip()">
+                <div class="card-inner">
+                    <div class="card-front" id="front-text">Japanese Word</div>
+                    <div class="card-back" id="back-text">සිංහල තේරුම</div>
+                </div>
+            </div>
+            <div class="controls">
+                <button onclick="prevCard()">◀ පසුපසට</button>
+                <span id="card-indicator" style="font-weight: bold; color: #555;">1 / 110</span>
+                <button onclick="nextCard()">ඉදිරියට ▶</button>
+            </div>
+        </div>
+
+        <div id="quiz-section" class="quiz-view hidden">
+            <div id="quiz-game" style="width: 100%;">
+                <div class="quiz-question" id="quiz-question-text">ප්‍රශ්නය මෙතනට...</div>
+                <div class="options-grid" id="options-container"></div>
+                <div id="quiz-feedback" class="feedback"></div>
+            </div>
+            <div id="quiz-result" class="hidden">
+                <p class="quiz-question">ප්‍රශ්නාවලිය අවසන්! 🎉</p>
+                <p id="score-display" class="score-text">ලකුණු: 0/0</p>
+                <button onclick="startQuiz()" style="margin-top: 25px; width: 160px;">නැවත උත්සාහ කරන්න</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ඔයා ලබාදුන් පිටු 12 ම ඇතුළත් වචන 110 ක සම්පූර්ණ දත්ත පද්ධතිය (Data Set)
+        const studyData = [
+            // 1 වෙනි පිටුව
+            { term: "あさ (asa)", definition: "උදේ" },
+            { term: "うえ (ue)", definition: "උඩ / ඉහළ" },
+            { term: "いえ (ie)", definition: "ගෙදර" },
+            { term: "えび (ebi)", definition: "ඉස්සා" },
+            { term: "おと (oto)", definition: "ශබ්දය" },
+            { term: "かお (kao)", definition: "මුහුණ" },
+            { term: "きた (kita)", definition: "උතුර" },
+            { term: "くるま (kuruma)", definition: "කාර් එක / වාහනය" },
+            { term: "けむり (kemuri)", definition: "දුම" },
+            { term: "ここ (koko)", definition: "මෙතන" },
+            { term: "さとう (satō)", definition: "සීනි" },
+            // 2 වෙනි පිටුව
+            { term: "ごみ (gomi)", definition: "කුණු" },
+            { term: "ざっし (zasshi)", definition: "සඟරාව" },
+            { term: "じかん (jikan)", definition: "වේලාව" },
+            { term: "ずが / ずえ (zuga / zue)", definition: "චිත්‍ර එකතුව" },
+            { term: "ぜろ (zero)", definition: "බිංදුව (0)" },
+            { term: "ぞう (zō)", definition: "අලියා" },
+            { term: "だめ (dame)", definition: "එපා / බෑ" },
+            { term: "おやすみなさい (oyasuminasai)", definition: "සුබ රාත්‍රියක් (Good night)" },
+            { term: "でんしゃ (densha)", definition: "දුම්රිය" },
+            { term: "ばしょ (basho)", definition: "ස්ථානය" },
+            { term: "びっくり (bikkuri)", definition: "පුදුමය / ගැස්සීම" },
+            // 3 වෙනි පිටුව
+            { term: "べんり (benri)", definition: "පහසුව / පහසුයි" },
+            { term: "ぼうし (bōshi)", definition: "තොප්පිය" },
+            { term: "かっぱつ (kappatsu)", definition: "ක්‍රියාශීලී" },
+            { term: "どろぼう (dorobō)", definition: "හොරා" },
+            { term: "ヤード (yādo) [Katakana]", definition: "යාරය (Yard)" },
+            // 4 වෙනි පිටුව (ශරීරයේ කොටස් - I)
+            { term: "は (ha)", definition: "දත / දත්" },
+            { term: "くちびる (kuchibiru)", definition: "තොල / තොල්" },
+            { term: "ほっぺた (hoppeta)", definition: "කම්මුල" },
+            { term: "のど (nodo)", definition: "උගුර" },
+            { term: "くび (kubi)", definition: "බෙල්ල" },
+            { term: "かた (kata)", definition: "උරහිස" },
+            { term: "せなか (senaka)", definition: "පිට (Back)" },
+            { term: "むね (mune)", definition: "පපුව" },
+            // 5 වෙනි පිටුව (ශරීරයේ කොටස් - II)
+            { term: "おなか (onaka)", definition: "බඩ" },
+            { term: "うで (ude)", definition: "අත (Arm / ඉහළ බාහුව)" },
+            { term: "ふともも (futomomo)", definition: "කලව" },
+            { term: "ひざ (hiza)", definition: "දණහිස" },
+            { term: "ひじ (hiji)", definition: "වැලමිට" },
+            { term: "あし (ashi)", definition: "කකුල / පතුල" },
+            { term: "かかと (kakato)", definition: "විලුඹ" },
+            { term: "あしくび (ashikubi)", definition: "වළලුකර" },
+            { term: "あしのうら (ashi no ura)", definition: "යටි පතුල" },
+            { term: "ゆび (yubi)", definition: "ඇඟිල්ල / ඇඟිලි" },
+            { term: "ゆびさき (yubisaki)", definition: "ඇඟිලි තුඩු" },
+            // 6 වෙනි පිටුව (ශරීරයේ කොටස් - III)
+            { term: "つめ (tsume)", definition: "නියපොත්ත" },
+            { term: "へそ (heso)", definition: "බුරිය" },
+            { term: "つまさき (tsumasaki)", definition: "කකුලේ ඇඟිලි තුඩු / පය තුඩු" },
+            { term: "て (te)", definition: "අත (Hand - අල්ල කොටස)" },
+            { term: "うで (ude)", definition: "අත (Arm - මුළු අතම)" },
+            { term: "てくび (tekubi)", definition: "මැණික් කටුව" },
+            { term: "おしり (oshiri)", definition: "පස්ස (Buttocks)" },
+            { term: "からだ (karada)", definition: "ශරීරය" },
+            { term: "からだのぶぶん (karada no bubun)", definition: "ශරීරයේ කොටස්" },
+            { term: "くち (kuchi)", definition: "කට" },
+            { term: "かみのけ (kaminoke)", definition: "කොණ්ඩය / කෙස් වැටිය" },
+            // 7 වෙනි පිටුව (විවිධ වචන සහ නාමපද)
+            { term: "はっけん (hakken)", definition: "සොයාගැනීම (Discovery)" },
+            { term: "せっけん (sekken)", definition: "සබන්" },
+            { term: "はつおん (hatsuon)", definition: "උච්චාරණය (Pronunciation)" },
+            { term: "さっき (sakki)", definition: "කලින් / මීට ටික වෙලාවකට කලින්" },
+            { term: "きっぷ (kippu)", definition: "ටිකට්පත (Ticket)" },
+            { term: "きって (kitte)", definition: "මුද්දරය" },
+            { term: "ひたい (hitai)", definition: "නළල" },
+            { term: "まゆげ (mayuge)", definition: "ඇහිබැම" },
+            { term: "あご (ago)", definition: "নিকට" },
+            { term: "のうか (nōka)", definition: "ගොවියා / ගොවි නිවස" },
+            { term: "だんせい (dansei)", definition: "පිරිමියා / පුරුෂයා" },
+            { term: "かちょう (kachō)", definition: "අංශ ප්‍රධානියා" },
+            { term: "いしゃ (isha)", definition: "වෛද්‍යවරයා" },
+            { term: "がいこくじん (gaikokujin)", definition: "විදේශිකයා" },
+            { term: "くに (kuni)", definition: "රට" },
+            // 8 වෙනි පිටුව (පවුලේ සාමාජිකයන් - I)
+            { term: "ちち (chichi) / おとうさん (otōsan)", definition: "තාත්තා" },
+            { term: "はは (haha) / おかあさん (okāsan)", definition: "අම්මා" },
+            { term: "りょうしん (ryōshin) / ごりょうしん (goryōshin)", definition: "දෙමාපියන්" },
+            { term: "あに (ani) / おにいさん (onīsan)", definition: "අයියා" },
+            { term: "あね (ane) / おねえさん (onēsan)", definition: "අක්කා" },
+            { term: "おとうと (otōto) / おとうとさん (otōtosan)", definition: "මල්ලි" },
+            { term: "いもうと (imōto) / いもうとさん (imōtosan)", definition: "නංගි" },
+            { term: "きょうだい (kyōdai) / ごきょうだい (gokyōdai)", definition: "සහෝදර සහෝදරියන්" },
+            { term: "しまい (shimai)", definition: "සහෝදරියන් (විතරක්ම)" },
+            // 9 වෙනි පිටුව (පවුලේ සාමාජිකයන් - II)
+            { term: "そふ (sofu) / おじいさん (ojīsan)", definition: "සීයා" },
+            { term: "そぼ (sobo) / おばあさん (obāsan)", definition: "ආච්චි" },
+            { term: "おば (oba) / おばさん (obasan)", definition: "නැන්දා / පුංචි" },
+            { term: "おじ (oji) / おじさん (ojisan)", definition: "මාමා / බාප්පා" },
+            { term: "おっと / しゅじん / ごしゅじん (goshujin)", definition: "සැමියා / මහත්තයා" },
+            { term: "つま / かない / おくさん (okusan)", definition: "බිරිඳ / ნෝනා" },
+            { term: "むすこ (musuko) / むすこさん (musukosan)", definition: "පුතා" },
+            { term: "むすめ (musume) / むすめさん (musumesan)", definition: "දුව" },
+            { term: "こども (kodomo) / おこさん (okosan)", definition: "ළමයා / දරුවා" },
+            { term: "まご (mago) / おまごさん (omagosan)", definition: "මුණුබුරා / මිණිබිරිය" },
+            // 10 වෙනි පිටුව (ස්ථාන සහ ක්‍රියාපද)
+            { term: "なんですか (nan desu ka)", definition: "මොකක්ද?" },
+            { term: "しごと (shigo to)", definition: "රැකියාව / වැඩ" },
+            { term: "まち (machi)", definition: "නගරය" },
+            { term: "おてら (otera)", definition: "පන්සල" },
+            { term: "ゆうびんきょく (yūbinkyoku)", definition: "තැපැල් කාර්යාලය" },
+            { term: "としょかん (toshokan)", definition: "පුස්තකාලය" },
+            { term: "します (shimasu)", definition: "කරනවා (Do)" },
+            { term: "すうජි (sūji)", definition: "අංකය / ඉලක්කම" },
+            { term: "ごはん (gohan)", definition: "බත් / ආහාරය" },
+            { term: "しんぶん (shinbun)", definition: "පත්තරය" },
+            // 11 වෙනි පිටුව (කැමැත්ත, හැකියාව සහ විවිධ)
+            { term: "ゆうがた (yūgata)", definition: "සවස / හැන්දෑව" },
+            { term: "さかな (sakana)", definition: "මාළුවා" },
+            { term: "すきです (suki desu)", definition: "කැමතියි" },
+            { term: "きらいです (kirai desu)", definition: "අකමැතියි" },
+            { term: "じょうずです (jōzu desu)", definition: "දක්ෂයි" },
+            { term: "へたです (heta desu)", definition: "අදක්ෂයි" },
+            { term: "できます (dekimasu)", definition: "පුළුවන් (හැකියාව)" },
+            { term: "わかります (wakarimasu)", definition: "තේරෙනවා" },
+            // 12 වෙනි පිටුව
+            { term: "びょうき (byōki)", definition: "අසනීප / ලෙඩ වීම" },
+            { term: "だいどころ (daidokoro)", definition: "කුස්සිය / මුළුතැන්ගෙය" }
+        ];
+
+        let currentCardIndex = 0;
+        let currentQuizIndex = 0;
+        let score = 0;
+        let canAnswer = true;
+        let activeQuizData = [];
+
+        // --- Flashcard Functions ---
+        function updateCard() {
+            const card = document.querySelector('.flashcard');
+            card.classList.remove('flipped');
+            
+            setTimeout(() => {
+                document.getElementById('front-text').innerText = studyData[currentCardIndex].term;
+                document.getElementById('back-text').innerText = studyData[currentCardIndex].definition;
+                document.getElementById('card-indicator').innerText = `${currentCardIndex + 1} / ${studyData.length}`;
+            }, 150);
+        }
+
+        function toggleFlip() {
+            document.querySelector('.flashcard').classList.toggle('flipped');
+        }
+
+        function nextCard() {
+            currentCardIndex = (currentCardIndex + 1) % studyData.length;
+            updateCard();
+        }
+
+        function prevCard() {
+            currentCardIndex = (currentCardIndex - 1 + studyData.length) % studyData.length;
+            updateCard();
+        }
+
+        // --- Tab Switcher ---
+        function switchView(view) {
+            if (view === 'cards') {
+                document.getElementById('flashcard-section').classList.remove('hidden');
+                document.getElementById('quiz-section').classList.add('hidden');
+                document.getElementById('show-cards-btn').classList.remove('secondary');
+                document.getElementById('show-quiz-btn').classList.add('secondary');
+            } else {
+                document.getElementById('flashcard-section').classList.add('hidden');
+                document.getElementById('quiz-section').classList.remove('hidden');
+                document.getElementById('show-cards-btn').classList.add('secondary');
+                document.getElementById('show-quiz-btn').classList.remove('secondary');
+                startQuiz();
+            }
+        }
+
+        // --- Quiz Functions ---
+        function startQuiz() {
+            currentQuizIndex = 0;
+            score = 0;
+            canAnswer = true;
+            
+            // හැම සැරේම ප්‍රශ්න 10ක් Random අරන් Quiz එකක් හදන්න
+            activeQuizData = [...studyData].sort(() => Math.random() - 0.5).slice(0, 10);
+            
+            document.getElementById('quiz-game').classList.remove('hidden');
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('quiz-feedback').innerText = '';
+            loadQuizQuestion();
+        }
+
+        function loadQuizQuestion() {
+            if (currentQuizIndex >= activeQuizData.length) {
+                showQuizResults();
+                return;
+            }
+
+            canAnswer = true;
+            document.getElementById('quiz-feedback').innerText = '';
+            const currentData = activeQuizData[currentQuizIndex];
+            document.getElementById('quiz-question-text').innerText = `"${currentData.term}" යන්නෙහි සිංහල තේරුම කුමක්ද? (${currentQuizIndex + 1}/10)`;
+
+            // වැරදි පිළිතුරු කලවම් කරලා MCQ Options 4ක් සෑදීම
+            let options = [currentData.definition];
+            while (options.length < 4) {
+                let randomDef = studyData[Math.floor(Math.random() * studyData.length)].definition;
+                if (!options.includes(randomDef)) {
+                    options.push(randomDef);
+                }
+            }
+            options.sort(() => Math.random() - 0.5);
+
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.innerText = option;
+                button.onclick = () => checkAnswer(button, option, currentData.definition);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function checkAnswer(clickedButton, selected, correct) {
+            if (!canAnswer) return;
+            canAnswer = false;
+
+            const feedbackEl = document.getElementById('quiz-feedback');
+
+            if (selected === correct) {
+                score++;
+                clickedButton.style.backgroundColor = '#c8e6c9';
+                clickedButton.style.borderColor = '#81c784';
+                feedbackEl.innerText = "නිවැරදියි! 🎉";
+                feedbackEl.className = "feedback correct";
+            } else {
+                clickedButton.style.backgroundColor = '#ffcdd2';
+                clickedButton.style.borderColor = '#e57373';
+                feedbackEl.innerText = `වැරදියි! නිවැරදි පිළිතුර: ${correct}`;
+                feedbackEl.className = "feedback wrong";
+            }
+
+            // තත්පර 1.2 කින් ඊළඟ ප්‍රශ්නයට auto යනවා
+            setTimeout(() => {
+                currentQuizIndex++;
+                loadQuizQuestion();
+            }, 1200);
+        }
+
+        function showQuizResults() {
+            document.getElementById('quiz-game').classList.add('hidden');
+            document.getElementById('quiz-result').classList.remove('hidden');
+            document.getElementById('score-display').innerText = `ඔබේ ලකුණු සංඛ්‍යාව: ${score} / ${activeQuizData.length}`;
+        }
+
+        // App එක මුලින්ම load වෙද්දී පළවෙනි කාඩ් එක පෙන්වන්න
+        updateCard();
+    </script>
+</body>
+</html>

@@ -2,16 +2,17 @@
 <html lang="si">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Japanese Study Companion</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Japanese Study Companion Pro</title>
     <style>
         * {
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            user-select: none; /* ෆෝන් එකේදී text select වෙන එක නවත්වන්න */
+            user-select: none;
             -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent; /* ෆෝන් එකේ ක්ලික් කරද්දි එන අළු පාට කොටුව අයින් කලා */
         }
 
         body {
@@ -20,11 +21,11 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 15px;
+            padding: 12px;
         }
 
         h1 {
-            margin: 15px 0 5px 0;
+            margin: 10px 0 3px 0;
             color: #4257b2;
             font-size: 22px;
             text-align: center;
@@ -33,7 +34,7 @@
         p.subtitle {
             font-size: 13px;
             color: #666;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
 
         .container {
@@ -42,53 +43,75 @@
             text-align: center;
         }
 
+        /* මොබයිල් ෆෝන් වලට වඩාත් ගැලපෙන ලෙස බටන් Layout එක සකස් කලා */
         .nav-buttons {
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             display: flex;
-            gap: 10px;
+            flex-wrap: wrap;
+            gap: 6px;
         }
 
         button {
             flex: 1;
+            min-width: 100px;
             background-color: #4257b2;
             color: white;
             border: none;
-            padding: 14px;
-            font-size: 16px;
+            padding: 12px 6px;
+            font-size: 14px;
             font-weight: bold;
             border-radius: 10px;
             cursor: pointer;
-            transition: 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.1s, background-color 0.2s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         button:active {
-            transform: scale(0.97);
+            transform: scale(0.96); /* Touch feedback එක */
         }
 
         button.secondary {
             background-color: #ffffff;
             color: #4257b2;
             border: 2px solid #4257b2;
+            padding: 10px 6px;
         }
 
-        /* Flashcard Styles */
-        .card-view, .quiz-view {
+        button.admin-btn {
+            background-color: #eef2ff; 
+            color: #4257b2;
+            border: 2px solid #4257b2;
+            box-shadow: 0 2px 8px rgba(66, 87, 178, 0.12);
+        }
+
+        /* Views */
+        .card-view, .quiz-view, .admin-view {
             background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            min-height: 320px;
+            padding: 16px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            min-height: 300px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+            width: 100%;
         }
 
+        .admin-view {
+            justify-content: flex-start;
+            align-items: stretch;
+            text-align: left;
+        }
+
+        /* Flashcard Styles */
         .flashcard {
             width: 100%;
-            height: 220px;
+            height: 200px;
             perspective: 1000px;
             cursor: pointer;
         }
@@ -98,7 +121,7 @@
             height: 100%;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.4s;
+            transition: transform 0.3s ease-out;
         }
 
         .flashcard.flipped .card-inner {
@@ -113,12 +136,13 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 26px; /* ජපන් අකුරු පැහැදිලිව පෙනෙන්න size එක පොඩ්ඩක් වැඩි කළා */
+            font-size: 26px;
             font-weight: 600;
-            border-radius: 12px;
+            border-radius: 14px;
             border: 2px solid #e2e8f0;
-            padding: 15px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            padding: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.01);
+            text-align: center;
         }
 
         .card-front {
@@ -137,7 +161,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 20px;
+            margin-top: 15px;
             width: 100%;
         }
 
@@ -145,6 +169,7 @@
             flex: none;
             width: 90px;
             padding: 10px;
+            font-size: 13px;
         }
 
         /* Quiz Styles */
@@ -153,9 +178,9 @@
         }
 
         .quiz-question {
-            font-size: 19px;
+            font-size: 17px;
             font-weight: 600;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: #2d3748;
             line-height: 1.4;
         }
@@ -163,7 +188,7 @@
         .options-grid {
             display: flex;
             flex-direction: column;
-            gap: 10px;
+            gap: 8px;
             width: 100%;
         }
 
@@ -171,7 +196,7 @@
             background-color: #f0f2ff;
             color: #333;
             border: 2px solid #cfd5ff;
-            padding: 14px;
+            padding: 12px;
             font-size: 15px;
             font-weight: 500;
             border-radius: 10px;
@@ -182,31 +207,161 @@
 
         /* Feedback Display */
         .feedback {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
-            margin-top: 15px;
-            min-height: 22px;
+            margin-top: 12px;
+            min-height: 20px;
         }
         .correct { color: #2e7d32; }
         .wrong { color: #c62828; }
 
         .score-text {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: bold;
             color: #2e7d32;
             margin-top: 10px;
+        }
+
+        /* Form Styles - මොබයිල් කීබෝඩ් එකෙන් ටයිප් කරන්න පහසු කලා */
+        .form-group {
+            margin-bottom: 12px;
+            width: 100%;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            margin-bottom: 4px;
+            color: #4a5568;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px; /* ෆෝන් එකේ ටයිප් කරද්දි auto-zoom Bug එක වළක්වන්න 16px කලා */
+            border: 2px solid #cbd5e0;
+            border-radius: 8px;
+            outline: none;
+            user-select: text !important;
+            -webkit-user-select: text !important;
+        }
+
+        .form-group input:focus {
+            border-color: #4257b2;
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: bold;
+            color: #4257b2;
+            margin: 12px 0 8px 0;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 4px;
+        }
+
+        /* වචන ලැයිස්තුව Touch screen වලට ගැලපෙන සේ සකස් කලා */
+        .word-list-container {
+            max-height: 260px;
+            overflow-y: auto;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 4px;
+            background: #f8fafc;
+            -webkit-overflow-scrolling: touch; /* iOS වල සුමටව Scroll වෙන්න */
+        }
+
+        .word-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 8px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+
+        .word-item:last-child {
+            border-bottom: none;
+        }
+
+        .word-info {
+            flex: 1;
+            padding-right: 8px;
+        }
+
+        .word-jp {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .word-si {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .action-btns {
+            display: flex;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .edit-btn {
+            background-color: #e2e8f0;
+            color: #4a5568;
+            padding: 6px 8px;
+            font-size: 11px;
+            border-radius: 6px;
+            width: auto;
+            flex: none;
+            box-shadow: none;
+        }
+
+        .delete-btn {
+            background-color: #ef4444;
+            color: white;
+            padding: 6px 8px;
+            font-size: 11px;
+            border-radius: 6px;
+            width: auto;
+            flex: none;
+            box-shadow: none;
+        }
+
+        .empty-text {
+            text-align: center;
+            color: #a0aec0;
+            padding: 20px;
+            font-size: 13px;
+        }
+        
+        .backup-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .backup-buttons button {
+            background-color: #718096;
+            font-size: 11px;
+            padding: 8px;
+        }
+
+        .cancel-btn {
+            background-color: #e2e8f0 !important;
+            color: #4a5568 !important;
         }
     </style>
 </head>
 <body>
 
     <h1>ජපන් භාෂා සහකරු</h1>
-    <p class="subtitle">Flashcards & Quiz App</p>
+    <p class="subtitle">Flashcards & Quiz App (Pro)</p>
 
     <div class="container">
         <div class="nav-buttons">
             <button id="show-cards-btn" onclick="switchView('cards')">Flashcards</button>
             <button id="show-quiz-btn" class="secondary" onclick="switchView('quiz')">Start Quiz</button>
+            <button id="show-admin-btn" class="admin-btn" onclick="switchView('admin')">වචන එකතු කරන්න ➕</button>
         </div>
 
         <div id="flashcard-section" class="card-view">
@@ -232,19 +387,45 @@
             <div id="quiz-result" class="hidden">
                 <p class="quiz-question">ප්‍රශ්නාවලිය අවසන්! 🎉</p>
                 <p id="score-display" class="score-text">ලකුණු: 0/0</p>
-                <button onclick="startQuiz()" style="margin-top: 25px; width: 160px;">නැවත උත්සාහ කරන්න</button>
+                <button onclick="startQuiz()" style="margin-top: 20px; width: 150px;">නැවත</button>
+            </div>
+        </div>
+
+        <div id="admin-section" class="admin-view hidden">
+            <h3 id="form-title" style="font-size: 15px; margin-bottom: 12px; color: #4257b2; text-align: center; font-weight: bold;">නව වචන ඇතුළත් කිරීමේ පුවරුව</h3>
+            
+            <div class="form-group">
+                <label>ජපන් වචනය (හිරගනා / කටකනා):</label>
+                <input type="text" id="input-term" placeholder="උදා: ありがとう" style="user-select: text; -webkit-user-select: text;">
+            </div>
+            <div class="form-group">
+                <label>සිංහල තේරුම:</label>
+                <input type="text" id="input-definition" placeholder="උදා: ස්තූතියි" style="user-select: text; -webkit-user-select: text;">
+            </div>
+            
+            <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                <button id="submit-word-btn" onclick="saveWord()" style="background-color: #4257b2; width: 100%;">වචනය සුරකින්න</button>
+                <button id="cancel-edit-btn" onclick="cancelEdit()" class="cancel-btn hidden" style="width: auto; padding: 0 12px;">අවලංගු</button>
+            </div>
+            
+            <div class="section-title">දැනට පවතින වචන ලැයිස්තුව (<span id="total-words-count">110</span>)</div>
+            <div class="word-list-container" id="word-list-container">
+                </div>
+
+            <div class="backup-buttons">
+                <button onclick="exportWords()">Backup (Export)</button>
+                <button onclick="document.getElementById('import-file').click()">Restore (Import)</button>
+                <input type="file" id="import-file" class="hidden" accept=".json" onchange="importWords(event)">
             </div>
         </div>
     </div>
 
     <script>
-        // රෝමජි (Romaji) සියල්ල ඉවත් කරන ලද වචන 110 ක සම්පූර්ණ දත්ත පද්ධතිය
-        const studyData = [
-            // 1 වෙනි පිටුව
+        const defaultStudyData = [
             { term: "あさ", definition: "උදේ" },
             { term: "うえ", definition: "උඩ / ඉහළ" },
             { term: "いえ", definition: "ගෙදර" },
-            { term: "えび", definition: "إස්සා" },
+            { term: "えび", definition: "ඉස්සා" },
             { term: "おと", definition: "ශබ්දය" },
             { term: "かお", definition: "මුහුණ" },
             { term: "きた", definition: "උතුර" },
@@ -252,11 +433,10 @@
             { term: "けむり", definition: "දුම" },
             { term: "ここ", definition: "මෙතන" },
             { term: "さとう", definition: "සීනි" },
-            // 2 වෙනි පිටුව
             { term: "ごみ", definition: "කුණු" },
             { term: "ざっし", definition: "සඟරාව" },
             { term: "じかん", definition: "වේලාව" },
-            { term: "ずが / ずえ", definition: "චිත්‍ර එකතුව" },
+            { term: "ずが / ずえ", definition: "Ref: චිත්‍ර එකතුව" },
             { term: "ぜろ", definition: "බිංදුව (0)" },
             { term: "ぞう", definition: "අලියා" },
             { term: "だめ", definition: "එපා / බෑ" },
@@ -264,13 +444,11 @@
             { term: "でんしゃ", definition: "දුම්රිය" },
             { term: "ばしょ", definition: "ස්ථානය" },
             { term: "びっくり", definition: "පුදුමය / ගැස්සීම" },
-            // 3 වෙනි පිටුව
             { term: "べんり", definition: "පහසුව / පහසුයි" },
             { term: "ぼうし", definition: "තොප්පිය" },
             { term: "かっぱつ", definition: "ක්‍රියාශීලී" },
             { term: "どろぼう", definition: "හොරා" },
             { term: "ヤード", definition: "යාරය (Yard)" },
-            // 4 වෙනි පිටුව (ශරීරයේ කොටස් - I)
             { term: "は", definition: "දත / දත්" },
             { term: "くちびる", definition: "තොල / තොල්" },
             { term: "ほっぺた", definition: "කම්මුල" },
@@ -279,10 +457,9 @@
             { term: "かた", definition: "උරහිස" },
             { term: "せなか", definition: "පිට (Back)" },
             { term: "むね", definition: "පපුව" },
-            // 5 වෙනි පිටුව (ශරීරයේ කොටස් - II)
             { term: "おなか", definition: "බඩ" },
             { term: "うで", definition: "අත (Arm / ඉහළ බාහුව)" },
-            { term: "ふともも", definition: "කලව" },
+            { term: "ふともම", definition: "කලව" },
             { term: "ひざ", definition: "දණහිස" },
             { term: "ひじ", definition: "වැලමිට" },
             { term: "あし", definition: "කකුල / පතුල" },
@@ -291,10 +468,9 @@
             { term: "あしのうら", definition: "යටි පතුල" },
             { term: "ゆび", definition: "ඇඟිල්ල / ඇඟිලි" },
             { term: "ゆびさき", definition: "ඇඟිලි තුඩු" },
-            // 6 වෙන比 පිටුව (ශරීරයේ කොටස් - III)
             { term: "つめ", definition: "නියපොත්ත" },
             { term: "へそ", definition: "බුරිය" },
-            { term: "つμαさき", definition: "කකුලේ ඇඟිලි තුඩු / පය තුඩු" },
+            { term: "つませき", definition: "කකුලේ ඇඟිලි තුඩු / පය තුඩු" },
             { term: "て", definition: "අත (Hand - අල්ල කොටස)" },
             { term: "うで", definition: "අත (Arm - මුළු අතම)" },
             { term: "てくび", definition: "මැණික් කටුව" },
@@ -303,15 +479,14 @@
             { term: "からだのぶぶん", definition: "ශරීරයේ කොටස්" },
             { term: "くち", definition: "කට" },
             { term: "かみのけ", definition: "කොණ්ඩය / කෙස් වැටිය" },
-            // 7 වෙනි පිටුව (විවිධ වචන සහ නාමපද)
-            { term: "はっけん", definition: "සۆයාගැනීම (Discovery)" },
+            { term: "はっけん", definition: "සොයාගැනීම (Discovery)" },
             { term: "せっけん", definition: "සබන්" },
             { term: "はつおん", definition: "උච්චාරණය (Pronunciation)" },
             { term: "さっき", definition: "කලින් / මීට ටික වෙලාවකට කලින්" },
             { term: "きっぷ", definition: "ටිකට්පත (Ticket)" },
             { term: "きって", definition: "මුද්දරය" },
             { term: "ひたい", definition: "නළල" },
-            { term: "まゆげ", definition: "ඇහිබැම" },
+            { term: "まゆге", definition: "ඇහිබැම" },
             { term: "あご", definition: "නිකට" },
             { term: "のうか", definition: "ගොවියා / ගොවි නිවස" },
             { term: "だんせい", definition: "පිරිමියා / පුරුෂයා" },
@@ -319,17 +494,15 @@
             { term: "いしゃ", definition: "වෛද්‍යවරයා" },
             { term: "がいこくじん", definition: "විදේශිකයා" },
             { term: "くに", definition: "රට" },
-            // 8 වෙනි පිටුව (පවුලේ සාමාජිකයන් - I)
             { term: "ちち / おとうさん", definition: "තාත්තා" },
             { term: "はは / おかあさん", definition: "අම්මා" },
             { term: "りょうしん / ごりょうしん", definition: "දෙමාපියන්" },
             { term: "あに / おにいさん", definition: "අයියා" },
             { term: "あね / おねえさん", definition: "අක්කා" },
             { term: "おとうと / おとうとさん", definition: "මල්ලි" },
-            { term: "いもうと / いもうとさん", definition: "නංගි" },
+            { term: "いもうと / いもうටさん", definition: "නංගි" },
             { term: "きょうだい / ごきょうだい", definition: "සහෝදර සහෝදරියන්" },
             { term: "しまい", definition: "සහෝදරියන් (විතරක්ම)" },
-            // 9 වෙනි පිටුව (පවුලේ සාමාජිකයන් - II)
             { term: "そふ / おじいさん", definition: "සීයා" },
             { term: "そぼ / おばあさん", definition: "ආච්චි" },
             { term: "おば / おばさん", definition: "නැන්දා / පුංචි" },
@@ -340,18 +513,16 @@
             { term: "むすめ / むすめさん", definition: "දුව" },
             { term: "こども / おこさん", definition: "ළමයා / දරුවා" },
             { term: "まご / おまごさん", definition: "මුණුබුරා / මිණිබිරිය" },
-            // 10 වෙනි පිටුව (ස්ථාන සහ ක්‍රියාපද)
             { term: "なんですか", definition: "මොකක්ද?" },
             { term: "しごと", definition: "රැකියාව / වැඩ" },
             { term: "まち", definition: "නගරය" },
-            { term: "おてら", definition: "පันසල" },
+            { term: "おてら", definition: "පන්සල" },
             { term: "ゆうびんきょく", definition: "තැපැල් කාර්යාලය" },
             { term: "としょかん", definition: "පුස්තකාලය" },
             { term: "します", definition: "කරනවා (Do)" },
             { term: "すうじ", definition: "අංකය / ඉලක්කම" },
             { term: "ごはん", definition: "බත් / ආහාරය" },
             { term: "しんぶん", definition: "පත්තරය" },
-            // 11 වෙනි පිටුව (කැමැත්ත, හැකියාව සහ විවිධ)
             { term: "ゆうがた", definition: "සවස / හැන්දෑව" },
             { term: "さかな", definition: "මාළුවා" },
             { term: "すきです", definition: "කැමතියි" },
@@ -360,22 +531,49 @@
             { term: "へたです", definition: "අදක්ෂයි" },
             { term: "できます", definition: "පුළුවන් (හැකියාව)" },
             { term: "わかります", definition: "තේරෙනවා" },
-            // 12 වෙනි පිටුව
             { term: "びょうき", definition: "අසනීප / ලෙඩ වීම" },
             { term: "だいどころ", definition: "කුස්සිය / මුළුතැන්ගෙය" }
         ];
 
+        let studyData = [];
         let currentCardIndex = 0;
         let currentQuizIndex = 0;
         let score = 0;
         let canAnswer = true;
         let activeQuizData = [];
+        let editingIndex = -1;
+
+        function loadData() {
+            const savedData = localStorage.getItem('japanese_study_data');
+            if (savedData) {
+                studyData = JSON.parse(savedData);
+            } else {
+                studyData = [...defaultStudyData];
+                saveDataToStorage();
+            }
+            updateCard();
+            renderAdminWordList();
+        }
+
+        function saveDataToStorage() {
+            localStorage.setItem('japanese_study_data', JSON.stringify(studyData));
+            document.getElementById('total-words-count').innerText = studyData.length;
+        }
 
         // --- Flashcard Functions ---
         function updateCard() {
             const card = document.querySelector('.flashcard');
             card.classList.remove('flipped');
             
+            if (studyData.length === 0) {
+                document.getElementById('front-text').innerText = "වචන නැත";
+                document.getElementById('back-text').innerText = "කරුණාකර ඇතුළත් කරන්න";
+                document.getElementById('card-indicator').innerText = "0 / 0";
+                return;
+            }
+
+            if (currentCardIndex >= studyData.length) currentCardIndex = 0;
+
             setTimeout(() => {
                 document.getElementById('front-text').innerText = studyData[currentCardIndex].term;
                 document.getElementById('back-text').innerText = studyData[currentCardIndex].definition;
@@ -384,32 +582,47 @@
         }
 
         function toggleFlip() {
-            document.querySelector('.flashcard').classList.toggle('flipped');
+            if (studyData.length > 0) {
+                document.querySelector('.flashcard').classList.toggle('flipped');
+            }
         }
 
         function nextCard() {
-            currentCardIndex = (currentCardIndex + 1) % studyData.length;
-            updateCard();
+            if (studyData.length > 0) {
+                currentCardIndex = (currentCardIndex + 1) % studyData.length;
+                updateCard();
+            }
         }
 
         function prevCard() {
-            currentCardIndex = (currentCardIndex - 1 + studyData.length) % studyData.length;
-            updateCard();
+            if (studyData.length > 0) {
+                currentCardIndex = (currentCardIndex - 1 + studyData.length) % studyData.length;
+                updateCard();
+            }
         }
 
         // --- Tab Switcher ---
         function switchView(view) {
+            document.getElementById('flashcard-section').classList.add('hidden');
+            document.getElementById('quiz-section').classList.add('hidden');
+            document.getElementById('admin-section').classList.add('hidden');
+            
+            document.getElementById('show-cards-btn').classList.add('secondary');
+            document.getElementById('show-quiz-btn').classList.add('secondary');
+            document.getElementById('show-admin-btn').classList.add('secondary');
+
             if (view === 'cards') {
                 document.getElementById('flashcard-section').classList.remove('hidden');
-                document.getElementById('quiz-section').classList.add('hidden');
                 document.getElementById('show-cards-btn').classList.remove('secondary');
-                document.getElementById('show-quiz-btn').classList.add('secondary');
-            } else {
-                document.getElementById('flashcard-section').classList.add('hidden');
+                updateCard();
+            } else if (view === 'quiz') {
                 document.getElementById('quiz-section').classList.remove('hidden');
-                document.getElementById('show-cards-btn').classList.add('secondary');
                 document.getElementById('show-quiz-btn').classList.remove('secondary');
                 startQuiz();
+            } else if (view === 'admin') {
+                document.getElementById('admin-section').classList.remove('hidden');
+                document.getElementById('show-admin-btn').classList.remove('secondary');
+                renderAdminWordList();
             }
         }
 
@@ -419,8 +632,15 @@
             score = 0;
             canAnswer = true;
             
-            // හැම සැරේම ප්‍රශ්න 10ක් Random අරන් Quiz එකක් හදන්න
-            activeQuizData = [...studyData].sort(() => Math.random() - 0.5).slice(0, 10);
+            if (studyData.length < 4) {
+                document.getElementById('quiz-game').classList.add('hidden');
+                document.getElementById('quiz-result').classList.remove('hidden');
+                document.getElementById('score-display').innerText = "Quiz එක ආරම්භ කිරීමට අවම වශයෙන් වචන 4ක් වත් තිබිය යුතුය.";
+                return;
+            }
+
+            const limit = Math.min(10, studyData.length);
+            activeQuizData = [...studyData].sort(() => Math.random() - 0.5).slice(0, limit);
             
             document.getElementById('quiz-game').classList.remove('hidden');
             document.getElementById('quiz-result').classList.add('hidden');
@@ -437,9 +657,8 @@
             canAnswer = true;
             document.getElementById('quiz-feedback').innerText = '';
             const currentData = activeQuizData[currentQuizIndex];
-            document.getElementById('quiz-question-text').innerText = `"${currentData.term}" යන්නෙහි සිංහල තේරුම කුමක්ද? (${currentQuizIndex + 1}/10)`;
+            document.getElementById('quiz-question-text').innerText = `"${currentData.term}" යන්නෙහි සිංහල තේරුම කුමක්ද? (${currentQuizIndex + 1}/${activeQuizData.length})`;
 
-            // වැරදි පිළිතුරු කලවම් කරලා MCQ Options 4ක් සෑදීම
             let options = [currentData.definition];
             while (options.length < 4) {
                 let randomDef = studyData[Math.floor(Math.random() * studyData.length)].definition;
@@ -480,7 +699,6 @@
                 feedbackEl.className = "feedback wrong";
             }
 
-            // තත්පර 1.2 කින් ඊළඟ ප්‍රශ්නයට auto යනවා
             setTimeout(() => {
                 currentQuizIndex++;
                 loadQuizQuestion();
@@ -493,8 +711,139 @@
             document.getElementById('score-display').innerText = `ඔබේ ලකුණු සංඛ්‍යාව: ${score} / ${activeQuizData.length}`;
         }
 
-        // App එක මුලින්ම load වෙද්දී පළවෙනි කාඩ් එක පෙන්වන්න
-        updateCard();
+        // --- Word Management Functions (Add / Edit / Delete) ---
+        function saveWord() {
+            const termInput = document.getElementById('input-term');
+            const defInput = document.getElementById('input-definition');
+            
+            const term = termInput.value.trim();
+            const definition = defInput.value.trim();
+
+            if (term === "" || definition === "") {
+                alert("කරුණාකර ජපන් වචනය සහ සිංහල තේරුම යන දෙකම ඇතුළත් කරන්න.");
+                return;
+            }
+
+            if (editingIndex === -1) {
+                studyData.unshift({ term: term, definition: definition });
+                alert("නව වචනය සාර්ථකව ඇතුළත් කළා! 🎉");
+            } else {
+                studyData[editingIndex] = { term: term, definition: definition };
+                alert("වචනය සාර්ථකව යාවත්කාලීන කළා! 🔄");
+                cancelEdit();
+            }
+
+            saveDataToStorage();
+            renderAdminWordList();
+            
+            termInput.value = "";
+            defInput.value = "";
+        }
+
+        function editWord(index) {
+            editingIndex = index;
+            
+            document.getElementById('input-term').value = studyData[index].term;
+            document.getElementById('input-definition').value = studyData[index].definition;
+            
+            document.getElementById('form-title').innerText = "වචනය සංස්කරණය කිරීම (Edit Mode)";
+            document.getElementById('submit-word-btn').innerText = "වෙනස්කම් සුරකින්න";
+            document.getElementById('submit-word-btn').style.backgroundColor = "#2e7d32";
+            document.getElementById('cancel-edit-btn').classList.remove('hidden');
+            
+            document.getElementById('input-term').focus();
+            window.scrollTo({ top: 0, behavior: 'smooth' }); // ෆෝන් වල Form එක උඩට Smooth scroll වෙන්න
+        }
+
+        function cancelEdit() {
+            editingIndex = -1;
+            document.getElementById('input-term').value = "";
+            document.getElementById('input-definition').value = "";
+            
+            document.getElementById('form-title').innerText = "නව වචන ඇතුළත් කිරීමේ පුවරුව";
+            document.getElementById('submit-word-btn').innerText = "වචනය සුරකින්න";
+            document.getElementById('submit-word-btn').style.backgroundColor = "#4257b2";
+            document.getElementById('cancel-edit-btn').classList.add('hidden');
+        }
+
+        function deleteWord(index) {
+            if (confirm(`"${studyData[index].term}" වචනය ඉවත් කිරීමට අවශ්‍යද?`)) {
+                if (editingIndex === index) {
+                    cancelEdit();
+                }
+                studyData.splice(index, 1);
+                saveDataToStorage();
+                renderAdminWordList();
+            }
+        }
+
+        function renderAdminWordList() {
+            const container = document.getElementById('word-list-container');
+            document.getElementById('total-words-count').innerText = studyData.length;
+            container.innerHTML = '';
+
+            if (studyData.length === 0) {
+                container.innerHTML = '<div class="empty-text">ලැයිස්තුවේ වචන කිසිවක් නැත.</div>';
+                return;
+            }
+
+            studyData.forEach((item, index) => {
+                const itemDiv = document.createElement('div');
+                itemDiv.className = 'word-item';
+                itemDiv.innerHTML = `
+                    <div class="word-info">
+                        <span class="word-jp">${item.term}</span><br>
+                        <span class="word-si">${item.definition}</span>
+                    </div>
+                    <div class="action-btns">
+                        <button class="edit-btn" onclick="editWord(${index})">වෙනස්</button>
+                        <button class="delete-btn" onclick="deleteWord(${index})">මකන්න</button>
+                    </div>
+                `;
+                container.appendChild(itemDiv);
+            });
+        }
+
+        // --- Backup & Restore ---
+        function exportWords() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(studyData, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "japanese_vocabulary_backup.json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        function importWords(event) {
+            const fileNode = event.target;
+            if (fileNode.files.length === 0) return;
+            
+            const file = fileNode.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const importedData = JSON.parse(e.target.result);
+                    if (Array.isArray(importedData)) {
+                        if (confirm("මෙම Backup ගොනුව ඇතුළත් කිරීමෙන් දැනට පවතින වචන සියල්ල වෙනස් වේ. ඉදිරියට යන්නද?")) {
+                            studyData = importedData;
+                            cancelEdit();
+                            saveDataToStorage();
+                            renderAdminWordList();
+                            updateCard();
+                            alert("දත්ත සාර්ථකව Restore කළා! 🔄");
+                        }
+                    } else {
+                        alert("වැරදි ගොනු ආකෘතියකි (Invalid Backup file).");
+                    }
+                } catch(err) {
+                    alert("ගොනුව කියවීමේදී දෝෂයක් සිදු විය.");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        loadData();
     </script>
 </body>
 </html>
